@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-pod
+spec:
+  containers:
+    - name: redis-pod
+      image: redis
+      volumeMounts:
+        - name: secret-creds
+          mountPath: /app-creds
+  volumes:
+    - name: secret-creds
