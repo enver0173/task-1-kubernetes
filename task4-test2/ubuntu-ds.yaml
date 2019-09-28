@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ubuntu
+  labels:
+    k8s-app: ubuntu
+spec:
+  selector:
+    matchLabels:
+      name: ubuntu
+  template:
+    metadata:
+      labels:
+        name: ubuntu
+    spec:
+      tolerations:
+      containers:
+      - name: ubuntu
+        image: ubuntu
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+                path: /var/lib/docker/containers
