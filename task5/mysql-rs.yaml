@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-mysql
+  labels:
+    svc: wordpress-mysql
+spec:
+  clusterIP: None
+  ports:
+  - port: 3306 
+  selector:
+    app: wordpress
+    tier: backend 
+---
+
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  name: mysql-rs-secret
+  labels:
+    app: mysql-rs-secret
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: backend      
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        tier: backend      
+        app: wordpress
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.6
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: enversecret
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-pv
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-pv
+        persistentVolumeClaim:
+          claimName: mysqlpvc
+          
