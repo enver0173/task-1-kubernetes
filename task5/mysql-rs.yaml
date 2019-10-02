@@ -10,27 +10,26 @@ spec:
   - port: 3306 
   selector:
     app: wordpress
-    tier: backend 
+    tier: backend  
+ 
 ---
 
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: mysql-rs-secret
-  labels:
-    app: mysql-rs-secret
+  name: mysqlrs
 spec:
   replicas: 1
   selector:
     matchLabels:
-      tier: backend      
+      tier: backend
       app: wordpress
   template:
     metadata:
       labels:
-        tier: backend      
+        tier: backend
         app: wordpress
-    spec:
+    spec:   
       containers:
       - name: mysql
         image: mysql:5.6
@@ -38,7 +37,7 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: enversecret
+              name: mysecret
               key: password
         ports:
         - containerPort: 3306
@@ -50,4 +49,3 @@ spec:
       - name: mysql-pv
         persistentVolumeClaim:
           claimName: mysqlpvc
-          
